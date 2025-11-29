@@ -14,8 +14,16 @@ OFF    = [0, 0, 0]
 class Lights():
     def __init__(self):
         self.np = neopixel.NeoPixel(Pin(LED_PIN), NUM_LED)
+        self.default_color = RED
+        self.default_intensity = 1
+        
+    def defaults(self, color = None, intensity = None):
+        color = color if color else self.default_color
+        intensity = intensity  if intensity else self.default_intensity
+        return color, intensity
 
-    def on(self, num, color = RED, intensity = 1):
+    def on(self, num, color = None, intensity = None):
+        color, intensity = self.defaults(color, intensity)
         if num < NUM_LED:
             self.np[num] = [int(c*intensity) for c in color]
             self.np.write()
@@ -27,7 +35,8 @@ class Lights():
         for i in range(NUM_LED):
             self.off(i)
         
-    async def animate(self, color = RED, intensity = 0.3, number = NUM_LED, repeat= 1, timeout = 1.0, speed = 0.1):
+    async def animate(self, color = None, intensity = None, number = NUM_LED, repeat= 1, timeout = 1.0, speed = 0.1):
+        color, intensity = self.defaults(color, intensity)
         for j in range(repeat):
             for i in range(number):
                 self.on(i, color, intensity)
@@ -39,7 +48,8 @@ class Lights():
             await asyncio.sleep(timeout)
             self.all_off()
 
-    def show_number(self, number, color = RED, intensity = 1):
+    def show_number(self, number, color = None, intensity = None):
+        color, intensity = self.defaults(color, intensity)
         for i in range(number):
             self.on(i, color,intensity)   
     

@@ -36,11 +36,10 @@ class Play:
             print("shutting down")
 
 # Usage example:
-async def main():
+async def main(obj):
     play = Play(lights.BLUE)
     task = asyncio.create_task(play.run())
-    await asyncio.sleep(20)
+    while obj.running:
+        await asyncio.sleep(1)
     play.running = False
     await task
-
-asyncio.run(main())
