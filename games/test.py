@@ -40,6 +40,8 @@ async def main(obj):
     play = Play(lights.BLUE)
     task = asyncio.create_task(play.run())
     while obj.running:
+        print('@',end='')
         await asyncio.sleep(1)
+    print('ending test game')
     play.running = False
     await task

@@ -72,7 +72,7 @@ def now_test():
         while True:
             i+= 1
             time.sleep(1)
-            n.publish('Sent: {i}')
+            n.publish(f'Sent: {i}')
     
     except KeyboardInterrupt:
         print("Interrupted! Cleaning up...")
@@ -81,13 +81,13 @@ def now_test():
         # Ensure interfaces are deactivated on exit
         n.close()
     
-button_test()
+'''button_test()
 motor_test()
 buzzer_test()
 light_test()
 accel_test()
 battery_test()
-wifi_test()
+wifi_test()'''
 now_test()
 
-hibernate()
+#hibernate()
