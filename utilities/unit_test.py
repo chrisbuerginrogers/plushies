@@ -1,15 +1,15 @@
 import time
 import asyncio
 
-from utilities.utilities import *
-from utilities.lights import *
-from utilities.i2c_bus import *
-from utilities.wifi import *
-from utilities.now import *
+import utilities.utilities as utilities
+import utilities.lights as lights
+import utilities.i2c_bus as i2c_bus
+import utilities.wifi as WIFI
+import utilities.now as espnow
 
 def button_test():
     print('Testing the button - click it any time')
-    button = Button()
+    button = utilities.Button()
     while not button.pressed:
         print('.', end='')
         time.sleep(0.1)
@@ -17,12 +17,12 @@ def button_test():
 
 def motor_test():
     print('Testing the motor - haptic feedback')
-    motor = Motor()
+    motor = utilities.Motor()
     motor.run()
     
 def buzzer_test():
     print('Testing the buzzer playing A4 for 2 sec')
-    buzzer = Buzzer()
+    buzzer = utilities.Buzzer()
     buzzer.play(440)
     time.sleep(2)
     buzzer.stop()
@@ -30,15 +30,15 @@ def buzzer_test():
 def light_test():
     print('Testing the neopixels - animate red then only 5 leds in purple twice')
     async def main():
-        a = Lights()
+        a = lights.Lights()
         await a.animate()
-        await a.animate(color = PURPLE, intensity = 0.2, number = 5, repeat= 2, timeout = 2.0, speed = 0.5)
+        await a.animate(color = lights.PURPLE, intensity = 0.2, number = 5, repeat= 2, timeout = 2.0, speed = 0.5)
     
     asyncio.run(main())
 
 def accel_test():
     print('Testing the accelerometer 10 times')
-    a = LIS2DW12()
+    a = i2c_bus.LIS2DW12()
     time.sleep(0.1)
     for i in range(10):
         print(f"Test: {i+1} - {a.read_accel()}")
@@ -48,12 +48,12 @@ def accel_test():
 
 def battery_test():
     print('Testing the battery')
-    b = Battery()
+    b = i2c_bus.Battery()
     print('percentage = ',b.read())
 
 def wifi_test():
     print('Testing the wifi: Make sure you have a secrets.py file loaded')
-    wifi = Wifi()
+    wifi = WIFI.Wifi()
     wifi.connect()
 
 # https://chrisrogers.pyscriptapps.com/nick-esp-now/latest/
@@ -63,7 +63,7 @@ def now_test():
         print(mac, msg, rssi)
         n.publish(msg, mac)
 
-    n = Now(my_callback)
+    n = espnow.Now(my_callback)
     n.connect()
     print(n.wifi.config('mac'))
     i = 0
@@ -81,13 +81,13 @@ def now_test():
         # Ensure interfaces are deactivated on exit
         n.close()
     
-'''button_test()
+button_test()
 motor_test()
 buzzer_test()
 light_test()
 accel_test()
 battery_test()
-wifi_test()'''
-now_test()
+#wifi_test()
+#now_test()
 
-#hibernate()
+utilities.hibernate()
