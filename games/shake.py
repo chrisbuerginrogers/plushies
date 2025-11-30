@@ -37,6 +37,7 @@ class Shake(Game):
             self.lights.all_on(self.color, 0.1, self.level)
 
     def close(self):
-        self.lights.all_off() 
+        self.lights.all_off()
+        self.button.irq = None
 
 

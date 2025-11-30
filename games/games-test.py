@@ -11,17 +11,16 @@ class SimplePlushie:
         
 george = SimplePlushie()
 
-async def main():
-    task = asyncio.create_task(fred.run(george))
+async def main(code):
+    task = asyncio.create_task(code.run(george))
     for i in range(5):
         print('@',end='')
         await asyncio.sleep(1)
     george.running = False
     print('ending game')
     await task
+
     
-asyncio.run(main())
-
-fred = Shake()
-
-asyncio.run(main())
+asyncio.run(main(fred))
+bill = Shake()
+asyncio.run(main(bill))

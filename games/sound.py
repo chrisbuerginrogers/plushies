@@ -37,4 +37,5 @@ class Notes(Game):
     def close(self):
         self.lights.all_off() 
         self.buzzer.close()
+        self.button.irq = None
 
