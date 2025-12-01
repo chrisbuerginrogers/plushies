@@ -26,7 +26,7 @@ class Controller:
             print(mac, msg, rssi)
             self.n.publish(msg, mac)
 
-        self.n = espnow.ESPNow(my_callback)
+        self.n = espnow.Now(my_callback)
         self.n.connect()
         print(self.n.wifi.config('mac'))
         
