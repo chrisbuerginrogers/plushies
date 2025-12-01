@@ -3,24 +3,23 @@ import asyncio
 from games.sound import Notes
 from games.shake import Shake
 
-fred = Notes()
-
 class SimplePlushie:
     def __init__(self):
         self.running = True
         
-george = SimplePlushie()
+plush = SimplePlushie()
 
 async def main(code):
-    task = asyncio.create_task(code.run(george))
-    for i in range(5):
+    plush.running = True
+    task = asyncio.create_task(code.run(plush))
+    for i in range(10):
         print('@',end='')
         await asyncio.sleep(1)
-    george.running = False
-    print('ending game')
+    plush.running = False
     await task
 
-    
+fred = Notes()
 asyncio.run(main(fred))
-bill = Shake()
+
+bill = Shake()   
 asyncio.run(main(bill))

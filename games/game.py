@@ -53,6 +53,7 @@ class SimplePlushie:
 george = SimplePlushie()
 
 async def main():
+    george.running = True
     task = asyncio.create_task(fred.run(george))
     for i in range(10):
         print('@',end='')
