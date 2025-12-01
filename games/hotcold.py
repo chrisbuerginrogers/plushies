@@ -1,9 +1,11 @@
 import utilities.now as espnow
 import utilities.lights as lights
 import time, json
+from games.game import Game
 
-class Hot_cold:
+class Hot_cold(Game):
     def __init__(self):
+        super().__init__('Hot/Cold Game')
         hidden_gem=b'\xf0\xf5\xbd-\x17x'
 
         def my_callback(msg, mac, rssi):
@@ -19,9 +21,7 @@ class Hot_cold:
                     pass
             
         led = lights.Lights()
-        now = espnow.Now(my_callback)
-        now.connect()
-        print(now.wifi.config('mac'))
+
 
 async def main(obj):
     play = Hot_cold()

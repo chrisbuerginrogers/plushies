@@ -7,6 +7,8 @@ import utilities.lights as lights
 import utilities.i2c_bus as i2c_bus
 from games.game import Game
 
+#  ALL ESPNow happens in Game
+
 COLORS = [lights.RED, lights.YELLOW, lights.GREEN, lights.BLUE, lights.PURPLE]
 
 class Shake(Game):

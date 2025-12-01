@@ -5,6 +5,8 @@ from utilities.utilities import Button,Buzzer
 import utilities.lights as lights
 from games.game import Game
 
+#  ALL ESPNow happens in Game
+
 # Frequencies for all 12 notes (in Hz)
 NOTES = {
     'C4': 262, 'C#4': 277, 'D4': 294, 'D#4': 311,
