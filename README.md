@@ -32,10 +32,13 @@ n.publish(test)
 ```mermaid
 graph TD;
 subgraph outer_box[Communication]
-        A[Controller Class] <--ESPNow--> B[Game Class]
-        subgraph inner_box[Stuffie Class]
-            B[Game Class] --self.topic, self.value--> C[Game guts]
-            B[Game Class] --self.running--> C[Game guts]
+        A[Controller Class] <--ESPNow--> B[main.py]
+        subgraph mid_box[Running on Stuffie]
+            B[main.py] --self.topic, self.value-->C[Game Class]
+            B[main.py] --self.running-->C[Game Class]
+            subgraph inner_box[Choosen Game]
+                C[Game Class] <--init, loop, close--> D[Game guts]
+            end
         end
     end
 style outer_box fill:#ffcc99,stroke:#333,stroke-width:2px
