@@ -31,6 +31,7 @@ class Stuffie:
             payload = json.loads(msg)
             self.topic = payload['topic']
             self.value = payload['value']
+            self.rssi = rssi
         except Exception as e:
             print(e)
                 
