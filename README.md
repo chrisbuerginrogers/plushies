@@ -35,15 +35,29 @@ subgraph outer_box[Communication]
         A[Controller Class] <--ESPNow--> B[main.py]
         subgraph mid_box[Running on Stuffie]
             B[main.py] --self.topic, self.value-->C[Game Class]
-            B[main.py] --self.running-->C[Game Class]
+            B[main.py] --response rate-->C[Game Class]
+            B[main.py] --self.name, self.running-->C[Game Class]
             subgraph inner_box[Choosen Game]
-                C[Game Class] <--init, loop, close--> D[Game guts]
+                C[Game Class] --init--> D[__init__]
+                C[Game Class] --loop--> E[async loop]
+                C[Game Class] --close--> F[close]
+                subgraph guts[game guts]
+                    D[__init__]
+                    E[async loop]
+                    F[close]
+                end
             end
         end
     end
 style outer_box fill:#ffcc99,stroke:#333,stroke-width:2px
 style inner_box fill:#cceeff,stroke:#333,stroke-width:2px
+style guts fill:#cceeff,stroke:#333,stroke-width:2px
 style A fill:#f9f,stroke:#333,stroke-width:2px
 style B fill:#ccf,stroke:#333,stroke-width:2px
 style C fill:#cfc,stroke:#333,stroke-width:2px
 ```
+
+Possible ESP topics are:
+1. "/game" defines the game number you want to start (main.py will stop the old one and start the new number)
+2. "/gem" defines the mac address of the hidden gem for hot/cold
+3. "/ping" is a simple ping to give the game guts an rssi strength
