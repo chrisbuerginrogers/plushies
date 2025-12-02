@@ -104,23 +104,23 @@ class Button:
 
         
 controller = Controller()
-controller.display.row = 1
-controller.display.arrow(controller.display.row)
+scroll_val = int(((controller.pot.read() + 1)/4095 * 5))*10 + 1
+controller.display.box_row(scroll_val)
 controller.connect()
-old_scroll_val = 0
+
+old_scroll_val = scroll_val
+
 while True:
-    time.sleep(1)
+    time.sleep(0.1)
     #controller.ping()
     
-    scroll_val = int(((controller.pot.read() + 1)/4095 * 6)) * 10
-    if abs(scroll_val - old_scroll_val) > 0:
-        controller.display.row = int(((controller.pot.read() + 1)/4095 * 6)) * 10
-        controller.display.arrow(controller.display.row)
+    scroll_val = int(((controller.pot.read() + 1)/4095 * 5))*10 + 1
+    if scroll_val != old_scroll_val:
+        controller.display.box_row(scroll_val)
         old_scroll_val = scroll_val
         
     if controller.button_select.state == 1:
         controller.button_select.state = 0
-        select = int((controller.display.row)/10)
-        print('select ', select)
-        controller.choose(select)
+        print('select ', scroll_val)
+        controller.choose(scroll_val)
         
