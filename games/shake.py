@@ -37,7 +37,7 @@ class Shake(Game):
             self.level = 0
             self.lights.all_off()
         else:  # Button released
-            acc = min(12, int(abs(self.abs_accel()) * 4))
+            acc = min(11, int(abs(self.abs_accel()) * 5))
             if self.level < acc: self.level = acc
             self.lights.all_on(self.color, 0.1, self.level)
 
