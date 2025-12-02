@@ -42,6 +42,7 @@ class Controller:
     def choose(self, game):
         mac = json.dumps({'topic':'/gem', 'value':self.mac})
         self.n.publish(mac)
+        time.sleep(1)
         setup = json.dumps({'topic':'/game', 'value':game})
         self.n.publish(setup)
 
