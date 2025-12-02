@@ -9,12 +9,12 @@ class Controller:
     def __init__(self):
         self.display = Display()
         self.display.clear_screen()
-        self.display.add_text('1: Hot-Cold')
-        self.display.add_text('2: Music')
-        self.display.add_text('3: Shake')
+        self.display.add_text('1: Music')
+        self.display.add_text('2: Shake')
+        self.display.add_text('3: Hot Cold')
         self.display.add_text('4: Jump')
         self.display.add_text('5: Clap')
-        self.display.add_text('6: no idea')
+        self.display.add_text('6: Rainbow')
         
         self.display.last_row = None
         self.row = 1
@@ -103,9 +103,10 @@ while True:
         
     if fred.button.state == 2:
         fred.button.state = 0
-        select = 1 + int((fred.display.row)/10)
+        select = int((fred.display.row)/10)
         print('select ', select)
         fred.choose(select)
         
         
         
+

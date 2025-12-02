@@ -8,9 +8,7 @@ import utilities.now as now
 
 from games.sound import Notes
 from games.shake import Shake
-from games.sound import Notes
-
-game_names = [Notes, Shake, Notes, Notes, Notes, Notes]
+from games.hotcold import Hot_cold
 
 class Stuffie:
     def __init__(self):
@@ -24,7 +22,11 @@ class Stuffie:
         self.topic = ''
         self.value = -1
         self.task = None
+        self.hidden_gem = None
         
+        self.game_names = [Notes(self), Shake(self), Hot_cold(self), Notes(self), Notes(self), Notes(self)]
+        self.response_times = [0.1, 0.1, 0.1, 0.1, 0.1, 0.1]
+
     def now_callback(self, msg, mac, rssi):
         print(mac, msg, rssi)
         try:
@@ -32,6 +34,12 @@ class Stuffie:
             self.topic = payload['topic']
             self.value = payload['value']
             self.rssi = rssi
+            
+            if self.topic == "/gem":  #do this here because you do not want to miss it
+                print('hidden gem = ',self.value)
+                self.hidden_gem = mac
+            
+
         except Exception as e:
             print(e)
                 
@@ -47,14 +55,14 @@ class Stuffie:
         self.lights.on(2)
         
     def start_game(self, number):
-        if number < 0 or number >= len(game_names):
+        if number < 0 or number >= len(self.game_names):
             print('illegal game number')
             return
         print('starting game ', number)
         self.lights.on(3)
         self.running = True
         self.game = number
-        self.task = asyncio.create_task(game_names[number]().run(self))
+        self.task = asyncio.create_task(self.game_names[number].run(self.response_times[number]))
         print(f'started {number}')
         
     async def stop_game(self, number):

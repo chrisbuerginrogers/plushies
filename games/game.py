@@ -4,10 +4,11 @@ import utilities.utilities as utilities
 import utilities.lights as lights
 
 class Game:
-    def __init__(self, name = 'test'):
+    def __init__(self, main, name = 'test'):
         self.button = utilities.Button()
         self.lights = lights.Lights()
         self.name = name
+        self.main = main
     
     async def loop(self):
         if self.button.pressed:  # Button pressed
@@ -18,13 +19,14 @@ class Game:
     def close(self):
         self.lights.all_off() 
             
-    async def run(self, obj, response = 0.1):
+    async def run(self, response = 0.1):
         """
         Async task that continually runs
-        """        
+        """
         try:
             print(f'starting game {self.name}')
-            while obj.running:
+            self.start()
+            while self.main.running:
                 await self.loop()
                 await asyncio.sleep(response)
         finally:

@@ -16,8 +16,11 @@ NOTES = {
 }
 
 class Notes(Game):
-    def __init__(self):
-        super().__init__('Notes Game')
+    def __init__(self, main):
+        super().__init__(main, 'Notes Game')
+        self.main = main
+        
+    def start(self):
         self.button = Button()
         self.buzzer = Buzzer()
         self.note = random.choice(list(NOTES.keys()))

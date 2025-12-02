@@ -12,8 +12,11 @@ from games.game import Game
 COLORS = [lights.RED, lights.YELLOW, lights.GREEN, lights.BLUE, lights.PURPLE]
 
 class Shake(Game):
-    def __init__(self):
-        super().__init__('Shakes Game')
+    def __init__(self, main):
+        super().__init__(main, 'Shakes Game')
+        self.main = main
+        
+    def start(self):
         self.button = Button()
         self.color = random.choice(COLORS)
         print(f'your color is {self.color}')
