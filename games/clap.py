@@ -8,12 +8,11 @@ import utilities.lights as lights
 import utilities.i2c_bus as i2c_bus
 from games.game import Game
 
-COLORS = [lights.VIOLET, lights.INDIGO, lights.BLUE, lights.GREEN, lights.YELLOW, lights.ORANGE, lights.RED]
 INTENSITY = 0.1
 
-class Rainbow(Game):
+class Clap(Game):
     def __init__(self, main):
-        super().__init__('Rainbow Game')
+        super().__init__('Clap Game')
         self.main = main
         
     def start(self):
@@ -21,7 +20,7 @@ class Rainbow(Game):
         
     async def loop(self):
         for i in range(12):
-            self.lights.on(i, COLORS[i%7], INTENSITY)
+            self.lights.on(i, lights.GREEN, INTENSITY)
 
     def close(self):
         self.lights.all_off()

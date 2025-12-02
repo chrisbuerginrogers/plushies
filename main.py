@@ -26,7 +26,7 @@ class Stuffie:
         self.task = None
         self.hidden_gem = None
         
-        self.game_names = [Notes(self), Shake(self), Hot_cold(self), Jump(self), Rainbow(self), Notes(self)]
+        self.game_names = [Notes(self), Shake(self), Hot_cold(self), Jump(self), Clap(self), Rainbow(self)]
         self.response_times = [0.1, 0.1, 0.1, 0.1, 0.1, 0.1]
 
     def now_callback(self, msg, mac, rssi):
