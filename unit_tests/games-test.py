@@ -2,6 +2,7 @@ import asyncio
 
 from games.sound import Notes
 from games.shake import Shake
+from games.jump import Jump
 
 class SimplePlushie:
     def __init__(self):
@@ -18,8 +19,11 @@ async def main(code):
     plush.running = False
     await task
 
-fred = Notes()
-asyncio.run(main(fred))
+#fred = Notes()
+#asyncio.run(main(fred))
 
-bill = Shake()   
-asyncio.run(main(bill))
+#bill = Shake()   
+#asyncio.run(main(bill))
+
+george = Jump()
+asyncio.run(main(george))
