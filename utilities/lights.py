@@ -4,11 +4,14 @@ import asyncio
 
 NUM_LED = 12
 LED_PIN = 20
-RED    = [255, 0, 0]
-YELLOW = [255,255,0]
-GREEN  = [0, 255, 0]
-BLUE   = [0, 0, 255]
 PURPLE = [255, 0, 255]
+VIOLET = [125, 0, 255]
+INDIGO = [75, 0, 130]
+BLUE = [0, 0, 255]
+GREEN = [0, 255, 0]
+YELLOW = [255, 255, 0]
+ORANGE = [255, 165, 0]
+RED = [255, 0, 0]
 OFF    = [0, 0, 0]
 
 class Lights():
