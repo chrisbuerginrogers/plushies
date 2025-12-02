@@ -28,13 +28,20 @@ class Controller:
 
         self.n = now.Now(my_callback)
         self.n.connect()
-        print(self.n.wifi.config('mac'))
+        self.mac = self.n.wifi.config('mac')
+        print(self.mac)
         
     def shutdown(self):
         stop = json.dumps({'topic':'/game', 'value':-1})
         self.n.publish(stop)
         
+    def ping(self):
+        ping = json.dumps({'topic':'/ping', 'value':1})
+        self.n.publish(ping)
+        
     def choose(self, game):
+        mac = json.dumps({'topic':'/gem', 'value':self.mac})
+        self.n.publish(mac)
         setup = json.dumps({'topic':'/game', 'value':game})
         self.n.publish(setup)
 
@@ -94,6 +101,9 @@ fred.display.box_row(fred.display.row)
 fred.connect()
 
 while True:
+    time.sleep(0.5)
+    fred.ping()
+    
     if fred.button.state == 1:
         fred.display.row += ROW
         if fred.display.row > 60: fred.display.row = 1
