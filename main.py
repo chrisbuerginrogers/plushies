@@ -7,14 +7,14 @@ from collections import deque
 import utilities.utilities as utilities
 import utilities.lights as lights
 import utilities.now as now
+import utilities.i2c_bus as i2c_bus
 import utilities.base64 as base64
 from utilities.colors import *
 
 from games.sound import Notes
 from games.shake import Shake
-from games.hotcold import Hot_cold
 from games.jump import Jump
-from games.clap import Clap
+from games.hotcold import Hot_cold
 from games.rainbow import Rainbow
 
 class Stuffie:
@@ -29,15 +29,16 @@ class Stuffie:
         self.task = None
         self.hidden_gem = None
         self.queue = deque([], 20)
-        
+
         self.lights = lights.Lights()
         self.lights.default_color = GREEN
         self.lights.default_intensity = 0.1
-
+        self.lights.all_off()
+        
+        self.accel = i2c_bus.LIS2DW12()
         self.button = utilities.Button()
         self.buzzer = utilities.Buzzer()
         self.buzzer.stop()
-        self.lights.all_off()
         
         self.game_names = [Notes(self), Shake(self), Hot_cold(self), Jump(self), Clap(self), Rainbow(self)]
         self.response_times = [0.1, 0.1, 0.1, 0.1, 0.1, 0.1]
