@@ -5,11 +5,13 @@ import json
 import utilities.utilities as utilities
 import utilities.lights as lights
 import utilities.now as now
+import utilities.base64 as base64
 
 from games.sound import Notes
 from games.shake import Shake
 from games.hotcold import Hot_cold
 from games.jump import Jump
+from games.clap import Clap
 from games.rainbow import Rainbow
 
 class Stuffie:
@@ -30,18 +32,19 @@ class Stuffie:
         self.response_times = [0.1, 0.1, 0.1, 0.1, 0.1, 0.1]
 
     def now_callback(self, msg, mac, rssi):
-        print(mac, msg, rssi)
         try:
             payload = json.loads(msg)
             self.topic = payload['topic']
             self.value = payload['value']
             self.rssi = rssi
+            if self.topic != '/ping': print(mac, msg, rssi)
             
             if self.topic == "/gem":  #do this here because you do not want to miss it
-                print('hidden gem = ',self.value)
-                self.hidden_gem = mac
+                bytes_from_string = self.value.encode('ascii')
+                gem_mac = base64.b64decode(bytes_from_string)
+                print('hidden gem = ',gem_mac)
+                self.hidden_gem = gem_mac
             
-
         except Exception as e:
             print(e)
                 

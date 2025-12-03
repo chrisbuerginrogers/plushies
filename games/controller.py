@@ -1,7 +1,10 @@
-import time, json
-import  utilities.now as now
 from machine import SoftI2C, Pin, ADC
 import ssd1306
+import time, json
+
+import  utilities.now as now
+import  utilities.base64 as base64
+
 
 ROW = 10
 
@@ -44,7 +47,9 @@ class Controller:
         self.n.publish(ping)
         
     def choose(self, game):
-        mac = json.dumps({'topic':'/gem', 'value':self.mac})
+        encoded_bytes = base64.b64encode(self.mac)
+        encoded_string = encoded_bytes.decode('ascii')
+        mac = json.dumps({'topic':'/gem', 'value':encoded_string})
         self.n.publish(mac)
         setup = json.dumps({'topic':'/game', 'value':game})
         self.n.publish(setup)
@@ -91,13 +96,13 @@ class Button:
     def update(self, p):
         accept = False
         start = time.ticks_ms()
+        self.state = 0
         while self.button.value() == 0:
-            if time.ticks_ms()-start > 100:
+            if time.ticks_ms()-start > 50:
                 accept = True
                 print("button pressed")
                 time.sleep(0.2)
-
-        self.state = 1 if accept else 0
+                self.state = 1
                
     def close(self):
         self.button.irq = None
@@ -110,9 +115,12 @@ controller.connect()
 
 old_scroll_val = scroll_val
 
+i = 0
 while True:
+    i += 1
     time.sleep(0.1)
-    #controller.ping()
+    #if i%10 == 1: controller.ping()
+    controller.ping()
     
     scroll_val = int(((controller.pot.read() + 1)/4095 * 5))*10 + 1
     if scroll_val != old_scroll_val:
@@ -121,6 +129,8 @@ while True:
         
     if controller.button_select.state == 1:
         controller.button_select.state = 0
-        print('select ', scroll_val)
-        controller.choose(scroll_val)
+        select = int(scroll_val/10)
+        print('select ', select)
+        controller.choose(select)
+        time.sleep(2)
         

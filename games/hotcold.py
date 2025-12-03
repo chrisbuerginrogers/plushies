@@ -22,16 +22,16 @@ class Hot_cold(Game):
         """
         if self.main.topic == '/ping':
             try:
-                print(self.main.hidden_gem)
-                print(self.main.rssi)
+                #print(self.main.hidden_gem)
+                #print(self.main.rssi)
                 strength = self.main.rssi[self.main.hidden_gem][0]
-                strength += 30 # best possbile case
-                s = int(12 + 3 * strength/10)
-                max(0, min(s, 11))
+                s = int(-11 * (strength+20)/50)   # assuming -60dB to -10dB is the best
+                strength = max(0, min(s, 11))
                 print('strength = ',strength)
-                self.led.show_number(s, lights.RED, INTENSITY)
-            except:
-                pass
+                self.led.all_off()
+                self.led.all_on(lights.RED, INTENSITY, 11-strength)
+            except Exception as e:
+                print(e)
 
         
     def close(self):
