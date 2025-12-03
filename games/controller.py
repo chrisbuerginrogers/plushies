@@ -56,6 +56,7 @@ class Controller:
         encoded_string = encoded_bytes.decode('ascii')
         mac = json.dumps({'topic':'/gem', 'value':encoded_string})
         self.n.publish(mac)
+        time.sleep(1)
         setup = json.dumps({'topic':'/game', 'value':game})
         self.n.publish(setup)
 

@@ -1,19 +1,36 @@
 import asyncio
 
+import utilities.utilities as utilities
+import utilities.lights as lights
+import utilities.now as now
+import utilities.i2c_bus as i2c_bus
+import utilities.base64 as base64
+from utilities.colors import *
+
 from games.sound import Notes
 from games.shake import Shake
 from games.jump import Jump
+from games.hotcold import Hot_cold
 from games.rainbow import Rainbow
 
 class SimplePlushie:
     def __init__(self):
         self.running = True
+        self.lights = lights.Lights()
+        self.lights.default_color = GREEN
+        self.lights.default_intensity = 0.1
+        self.lights.all_off()
+        
+        self.accel = i2c_bus.LIS2DW12()
+        self.button = utilities.Button()
+        self.buzzer = utilities.Buzzer()
+        self.buzzer.stop()
+         
         
 plush = SimplePlushie()
 
 async def main(code):
     plush.running = True
-    code.start()
     task = asyncio.create_task(code.run())
     for i in range(10):
         print('@',end='')
@@ -33,4 +50,7 @@ asyncio.run(main(sally))
 
 sam = Rainbow(plush)
 asyncio.run(main(sam))
+
+cath = Hot_cold(plush)
+asyncio.run(main(cath))
 

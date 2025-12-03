@@ -1,8 +1,7 @@
 import time, json
 
-from utilities.utilities import Button
-import utilities.lights as lights
 from games.game import Game
+from utilities.colors import *
 
 INTENSITY = 0.1
 
@@ -12,9 +11,7 @@ class Hot_cold(Game):
         self.main = main
         
     def start(self):
-        self.button = Button()
-        self.led = lights.Lights()
-        self.led.all_off()
+        self.main.lights.all_off()
         
     async def loop(self):
         """
@@ -28,13 +25,12 @@ class Hot_cold(Game):
             s = int(-11 * (strength+20)/50)   # assuming -60dB to -10dB is the best
             strength = max(0, min(s, 11))
             print('strength = ',strength)
-            self.led.all_off()
-            self.led.all_on(lights.RED, INTENSITY, 11-strength)
+            self.main.lights.all_off()
+            self.main.lights.all_on(RED, INTENSITY, 11-strength)
         except Exception as e:
             print(e)
 
         
     def close(self):
-        self.lights.all_off() 
-        self.button.irq = None
+        self.main.lights.all_off() 
         

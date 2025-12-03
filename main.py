@@ -8,6 +8,7 @@ import utilities.utilities as utilities
 import utilities.lights as lights
 import utilities.now as now
 import utilities.base64 as base64
+from utilities.colors import *
 
 from games.sound import Notes
 from games.shake import Shake
@@ -20,9 +21,7 @@ class Stuffie:
     def __init__(self):
         self.mac = None
         self.espnow = None
-        self.lights = lights.Lights()
-        self.lights.default_color = lights.GREEN
-        self.lights.default_intensity = 0.1
+
         self.game = -1
         self.running = False
         self.topic = ''
@@ -30,6 +29,15 @@ class Stuffie:
         self.task = None
         self.hidden_gem = None
         self.queue = deque([], 20)
+        
+        self.lights = lights.Lights()
+        self.lights.default_color = GREEN
+        self.lights.default_intensity = 0.1
+
+        self.button = utilities.Button()
+        self.buzzer = utilities.Buzzer()
+        self.buzzer.stop()
+        self.lights.all_off()
         
         self.game_names = [Notes(self), Shake(self), Hot_cold(self), Jump(self), Clap(self), Rainbow(self)]
         self.response_times = [0.1, 0.1, 0.1, 0.1, 0.1, 0.1]
@@ -96,6 +104,8 @@ class Stuffie:
         if self.game >= 0:
             self.stop_game(self.game)
         if self.espnow: self.espnow.close()
+        self.lights.all_off()
+        self.buzzer.stop()
 
     async def main(self):
         try:

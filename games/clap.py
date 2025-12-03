@@ -3,10 +3,8 @@ import math
 import asyncio
 import time
 
-from utilities.utilities import Button, Buzzer
-import utilities.lights as lights
-import utilities.i2c_bus as i2c_bus
 from games.game import Game
+from utilities.colors import *
 
 INTENSITY = 0.1
 
@@ -16,10 +14,6 @@ class Clap(Game):
         self.main = main
         
     def start(self):
-        self.button = Button()
-        self.buzzer = Buzzer()
-        self.buzzer.stop()
-        self.led = lights.Lights()
         self.led.all_off()
         
     async def loop(self):
@@ -42,7 +36,6 @@ class Clap(Game):
     def close(self):
         self.lights.all_off()
         self.buzzer.stop()
-        self.button.irq = None
 
 
 
