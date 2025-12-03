@@ -46,6 +46,10 @@ class Controller:
         ping = json.dumps({'topic':'/ping', 'value':1})
         self.n.publish(ping)
         
+    def notify(self):
+        ping = json.dumps({'topic':'/notify', 'value':1})
+        self.n.publish(ping)
+        
     def choose(self, game):
         encoded_bytes = base64.b64encode(self.mac)
         encoded_string = encoded_bytes.decode('ascii')
@@ -127,10 +131,15 @@ while True:
         controller.display.box_row(scroll_val)
         old_scroll_val = scroll_val
         
-    if controller.button_select.state == 1:
-        controller.button_select.state = 0
-        select = int(scroll_val/10)
-        print('select ', select)
-        controller.choose(select)
-        time.sleep(2)
+        if controller.button_select.state == 1:
+            controller.button_select.state = 0
+            select = int(scroll_val/10)
+            print('select ', select)
+            controller.choose(select)
+            time.sleep(2)
+    else:
+        if controller.button_select.state == 1:
+            controller.button_select.state = 0
+            controller.notify()
+        
         

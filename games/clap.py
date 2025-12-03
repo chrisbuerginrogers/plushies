@@ -3,7 +3,7 @@ import math
 import asyncio
 import time
 
-from utilities.utilities import Button, hibernate
+from utilities.utilities import Button, Buzzer
 import utilities.lights as lights
 import utilities.i2c_bus as i2c_bus
 from games.game import Game
@@ -17,10 +17,25 @@ class Clap(Game):
         
     def start(self):
         self.button = Button()
+        self.buzzer = utilities.Buzzer()
+        self.led = lights.Lights()
+        self.led.all_off()
         
     async def loop(self):
-        for i in range(12):
-            self.lights.on(i, lights.GREEN, INTENSITY)
+        if self.main.topic == '/notify':
+            try:
+                strength = self.main.rssi[self.main.hidden_gem][0]
+                s = int(-11 * (strength+20)/50)   # assuming -60dB to -10dB is the best
+                strength = max(0, min(s, 11))
+                print('strength = ',strength)
+                self.led.all_off()
+                self.led.all_on(lights.RED, INTENSITY, 11-strength)
+                if strength > 6:
+                    self.buzzer.play(440)
+                    time.sleep(1)
+                    self.buzzer.stop()
+            except Exception as e:
+                print(e)
 
     def close(self):
         self.lights.all_off()
