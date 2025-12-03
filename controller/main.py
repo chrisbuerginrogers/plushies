@@ -1,0 +1,136 @@
+
+import time, json
+import now
+from machine import SoftI2C, Pin, ADC
+import ssd1306
+
+ROW = 10
+
+class Controller:
+    def __init__(self):
+        self.display = Display()
+        self.display.clear_screen()
+        self.display.add_text('1: Music')
+        self.display.add_text('2: Shake')
+        self.display.add_text('3: Hot Cold')
+        self.display.add_text('4: Jump')
+        self.display.add_text('5: Rainbow')
+        self.display.add_text('6: Clap')
+        
+        self.display.last_row = None
+        self.row = 1
+
+        self.button_up = Button(10)
+        self.button_select = Button(9)
+        self.button_down = Button(8)
+        self.pot = ADC(Pin(3))
+        self.pot.atten(ADC.ATTN_11DB) # the pin expects a voltage range up to 3.3V
+        
+    def connect(self):
+        def my_callback(msg, mac, rssi):
+            print(mac, msg, rssi)
+            self.n.publish(msg, mac)
+
+        self.n = now.Now(my_callback)
+        self.n.connect()
+        self.mac = self.n.wifi.config('mac')
+        print(self.mac)
+        
+    def shutdown(self):
+        stop = json.dumps({'topic':'/game', 'value':-1})
+        self.n.publish(stop)
+        
+    def ping(self):
+        ping = json.dumps({'topic':'/ping', 'value':1})
+        self.n.publish(ping)
+        
+    def choose(self, game):
+        mac = json.dumps({'topic':'/gem', 'value':self.mac})
+        self.n.publish(mac)
+        setup = json.dumps({'topic':'/game', 'value':game})
+        self.n.publish(setup)
+
+class Display:
+    def __init__(self):
+        i2c = SoftI2C(scl = Pin(7), sda = Pin(6))
+        self.display = ssd1306.SSD1306_I2C(128, 64,i2c)
+        self.row = 1
+        self.last_row = None
+        
+    def clear_screen(self):
+        self.display.fill(0)
+        self.display.show()
+        self.row = 1
+        
+    def add_text(self, text):
+        self.display.text(text, 2, self.row, 1)  # 1 means white text
+        self.row += ROW
+        self.display.show()
+        
+    def arrow(self,row):
+        if self.last_row: self.display.fill_rect(100,self.last_row, 10, 10, 0)
+        self.display.fill_rect(100, row, 10,10, 1)
+        self.last_row = row
+        self.display.show()
+        
+    def box_row(self, row):
+        if self.last_row: self.display.rect(0,self.last_row,128,ROW-1,0)
+        self.display.rect(0,row,128,ROW-1,1)
+        self.last_row = row
+        self.display.show()
+        
+    def close(self):
+        self.clear_screen()
+
+class Button:
+    def __init__(self, pin):
+        self.button = Pin(pin, Pin.IN, Pin.PULL_UP)
+        self.button.irq(handler=self.update, trigger=Pin.IRQ_FALLING)
+
+        self.state = 0
+        
+    def update(self, p):
+        accept = False
+        start = time.ticks_ms()
+        while self.button.value() == 0:
+            if time.ticks_ms()-start > 100:
+                accept = True
+                print("button pressed")
+                time.sleep(0.2)
+
+        self.state = 1 if accept else 0
+               
+    def close(self):
+        self.button.irq = None
+
+        
+fred = Controller()
+fred.display.row = 1
+fred.display.arrow(fred.display.row)
+fred.connect()
+old_scroll_val = 0
+while True:
+    time.sleep(1)
+    #fred.ping()
+    
+    scroll_val = int(((fred.pot.read() + 1)/4095 * 6)) * 10
+    if abs(scroll_val - old_scroll_val) > 0:
+        fred.display.row = int(((fred.pot.read() + 1)/4095 * 6)) * 10
+        fred.display.arrow(fred.display.row)
+        old_scroll_val = scroll_val
+
+        
+
+        
+    if fred.button_select.state == 1:
+        fred.button_select.state = 0
+        select = int((fred.display.row)/10)
+        print('select ', select)
+        fred.choose(select)
+        
+        
+        
+
+
+
+
