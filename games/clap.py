@@ -17,7 +17,8 @@ class Clap(Game):
         
     def start(self):
         self.button = Button()
-        self.buzzer = utilities.Buzzer()
+        self.buzzer = Buzzer()
+        self.buzzer.stop()
         self.led = lights.Lights()
         self.led.all_off()
         
@@ -34,13 +35,13 @@ class Clap(Game):
                     self.buzzer.play(440)
                     time.sleep(1)
                     self.buzzer.stop()
+                self.main.topic = '/null'
             except Exception as e:
                 print(e)
 
     def close(self):
         self.lights.all_off()
-        if not self.button.pressed:
-            hibernate()
+        self.buzzer.stop()
         self.button.irq = None
 
 

@@ -47,8 +47,9 @@ class Controller:
         self.n.publish(ping)
         
     def notify(self):
-        ping = json.dumps({'topic':'/notify', 'value':1})
-        self.n.publish(ping)
+        note = json.dumps({'topic':'/notify', 'value':1})
+        self.n.publish(note)
+        print('notified')
         
     def choose(self, game):
         encoded_bytes = base64.b64encode(self.mac)
@@ -94,13 +95,12 @@ class Button:
     def __init__(self, pin):
         self.button = Pin(pin, Pin.IN, Pin.PULL_UP)
         self.button.irq(handler=self.update, trigger=Pin.IRQ_FALLING)
-
         self.state = 0
         
     def update(self, p):
         accept = False
         start = time.ticks_ms()
-        self.state = 0
+        #self.state = 0
         while self.button.value() == 0:
             if time.ticks_ms()-start > 50:
                 accept = True
@@ -129,7 +129,6 @@ while True:
     scroll_val = int(((controller.pot.read() + 1)/4095 * 5))*10 + 1
     if scroll_val != old_scroll_val:
         controller.display.box_row(scroll_val)
-        old_scroll_val = scroll_val
         
         if controller.button_select.state == 1:
             controller.button_select.state = 0
@@ -137,9 +136,11 @@ while True:
             print('select ', select)
             controller.choose(select)
             time.sleep(2)
+            old_scroll_val = scroll_val
     else:
         if controller.button_select.state == 1:
             controller.button_select.state = 0
             controller.notify()
         
         
+

@@ -2,6 +2,8 @@ import time
 import asyncio
 import json
 
+from collections import deque
+
 import utilities.utilities as utilities
 import utilities.lights as lights
 import utilities.now as now
@@ -27,23 +29,35 @@ class Stuffie:
         self.value = -1
         self.task = None
         self.hidden_gem = None
+        self.queue = deque([], 20)
         
         self.game_names = [Notes(self), Shake(self), Hot_cold(self), Jump(self), Clap(self), Rainbow(self)]
         self.response_times = [0.1, 0.1, 0.1, 0.1, 0.1, 0.1]
 
     def now_callback(self, msg, mac, rssi):
-        try:
-            payload = json.loads(msg)
-            self.topic = payload['topic']
-            self.value = payload['value']
-            self.rssi = rssi
-            if self.topic != '/ping': print(mac, msg, rssi)
+        self.queue.append((mac, msg, rssi))
             
-            if self.topic == "/gem":  #do this here because you do not want to miss it
-                bytes_from_string = self.value.encode('ascii')
-                gem_mac = base64.b64decode(bytes_from_string)
-                print('hidden gem = ',gem_mac)
-                self.hidden_gem = gem_mac
+    def parse_queue(self):
+        if not len(self.queue):
+            return
+        try:
+            (mac, msg, rssi) = self.queue.pop()
+            payload = json.loads(msg)
+            topic = payload['topic']
+            value = payload['value']
+
+            if topic == '/ping':
+                self.rssi = rssi
+            else:
+                print(mac, msg, rssi)
+                self.topic = topic
+                self.value = value
+                if self.topic == "/gem":  #do this here because you do not want to miss it
+                    bytes_from_string = self.value.encode('ascii')
+                    gem_mac = base64.b64decode(bytes_from_string)
+                    print('hidden gem = ',gem_mac)
+                    self.hidden_gem = gem_mac
+                
             
         except Exception as e:
             print(e)
@@ -63,6 +77,9 @@ class Stuffie:
         if number < 0 or number >= len(self.game_names):
             print('illegal game number')
             return
+        if self.game == number:
+            print(f'already running {number}')
+            return
         print('starting game ', number)
         self.lights.on(3)
         self.running = True
@@ -71,7 +88,7 @@ class Stuffie:
         print(f'started {number}')
         
     async def stop_game(self, number):
-        print('trying to stop')
+        print(f'trying to stop {number}')
         self.running = False
         await self.task
 
@@ -85,20 +102,24 @@ class Stuffie:
             self.startup()
             self.start_game(0)
             while self.game >= 0:
-                print('@',end='')
-                if self.topic == '/game':
-                    if self.value != self.game:
-                        print('Game ',self.value)
-                        if self.game >= 0:
-                            await self.stop_game(self.game)
-                        self.game = self.value
-                        if self.value >= 0:
-                            print('starting game ',self.value)
-                            self.start_game(self.value)
+                print(len(self.queue),end='')
+                while len(self.queue):
+                    self.parse_queue()
+                    if self.topic == '/game':
+                        if self.value != self.game:
+                            print('Game ',self.value)
+                            if self.game >= 0:
+                                await self.stop_game(self.game)
+                            #self.game = self.value
+                            if self.value >= 0:
+                                print('starting game ',self.value)
+                                self.start_game(self.value)
 
-                await asyncio.sleep(1)
+                await asyncio.sleep(0.5)
+        except Exception as e:
+            print('main error: ',e)
         finally:
-            print('shutting down')
+            print('main shutting down')
             self.close()
    
    
