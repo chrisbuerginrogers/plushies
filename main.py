@@ -52,25 +52,22 @@ class Stuffie:
             
     def parse_queue(self):
         if not len(self.queue):
-            return
+            return False
         try:
             (mac, msg, rssi) = self.queue.pop()
             payload = json.loads(msg)
             topic = payload['topic']
             value = payload['value']
+            print(topic)
 
             if topic == '/ping':
                 self.rssi = rssi
+                return False
             else:
                 print(mac, msg, rssi)
                 self.topic = topic
                 self.value = value
-                if self.topic == "/gem":  #do this here because you do not want to miss it
-                    bytes_from_string = self.value.encode('ascii')
-                    gem_mac = base64.b64decode(bytes_from_string)
-                    print('hidden gem = ',gem_mac)
-                    self.hidden_gem = gem_mac
-                
+                return True
             
         except Exception as e:
             print(e)
@@ -79,11 +76,10 @@ class Stuffie:
         print('Starting up')
         self.lights.on(0)
         self.espnow = now.Now(self.now_callback)
-        self.espnow.connect()
+        self.espnow.connect(True)
         self.lights.on(1)
         self.mac = self.espnow.wifi.config('mac')
         print('my mac address is ',[hex(b) for b in self.mac])
-        self.espnow.antenna()
         self.lights.on(2)
         
     def start_game(self, number):
@@ -111,25 +107,42 @@ class Stuffie:
         if self.espnow: self.espnow.close()
         self.lights.all_off()
         self.buzzer.stop()
-
+        
+    async def dosomething(self, topic, value, game):
+        print('running queue')
+        try:
+            if topic == "/gem":  #do this here because you do not want to miss it
+                bytes_from_string = value.encode('ascii')
+                gem_mac = base64.b64decode(bytes_from_string)
+                print('hidden gem = ',gem_mac)
+                self.hidden_gem = gem_mac
+            
+            if self.topic == '/game':
+                print('who knows ',value,game)
+                if value != game:
+                    print('Game ',value)
+                    if game >= 0:
+                        await self.stop_game(game)
+                    #self.game = self.value
+                    if value >= 0:
+                        print('starting game ',value)
+                        self.start_game(value)
+        except Exception as e:
+            print(e)
+                    
     async def main(self):
         try:
             self.startup()
             self.start_game(0)
             while self.game >= 0:
-                print(len(self.queue),end='')
+                print(len(self.queue),' ',end='')
                 while len(self.queue):
-                    self.parse_queue()
-                    if self.topic == '/game':
-                        if self.value != self.game:
-                            print('Game ',self.value)
-                            if self.game >= 0:
-                                await self.stop_game(self.game)
-                            #self.game = self.value
-                            if self.value >= 0:
-                                print('starting game ',self.value)
-                                self.start_game(self.value)
-
+                    good = self.parse_queue()
+                    print(good)
+                    if good:
+                        print('here ',self.topic, self.value, self.game)
+                        await self.dosomething(self.topic, self.value, self.game)
+                        print('fred ',self.topic, self.value, self.game)
                 await asyncio.sleep(0.5)
         except Exception as e:
             print('main error: ',e)
