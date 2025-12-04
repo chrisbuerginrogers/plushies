@@ -11,8 +11,7 @@ MIN_EVENT_SPACING = 500   # Minimum ms between jumps (prevents double-counting)
 
 class Jump(Game):
     def __init__(self, main):
-        super().__init__('Jump Game')
-        self.main = main
+        super().__init__(main, 'Jump Game')
         
     def start(self):
         self.color = random.choice(COLORS)

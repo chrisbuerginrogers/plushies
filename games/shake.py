@@ -10,7 +10,6 @@ from utilities.colors import *
 class Shake(Game):
     def __init__(self, main):
         super().__init__(main, 'Shakes Game')
-        self.main = main
         
     def start(self):
         self.color = random.choice(COLORS)

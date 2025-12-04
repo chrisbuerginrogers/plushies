@@ -7,14 +7,13 @@ INTENSITY = 0.1
 
 class Hibernate(Game):
     def __init__(self, main):
-        super().__init__('Hibernate Game')
-        self.main = main
+        super().__init__(main, 'Hibernate Game')
         
     def start(self):
         for i in range(5):
             self.main.lights.all_on(RED, 0.1, 12)
             time.sleep(0.5)
-            self.main.all_off()
+            self.main.lights.all_off()
             time.sleep(0.5)
         if not self.main.button.pressed:
             self.main.utilities.hibernate()

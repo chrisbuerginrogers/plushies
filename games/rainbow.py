@@ -10,8 +10,7 @@ INTENSITY = 0.1
 
 class Rainbow(Game):
     def __init__(self, main):
-        super().__init__('Rainbow Game')
-        self.main = main
+        super().__init__(main, 'Rainbow Game')
         
     def start(self):
         self.bat = int(self.main.battery.read()/100*12)

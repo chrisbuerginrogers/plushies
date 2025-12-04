@@ -12,6 +12,7 @@ from games.shake import Shake
 from games.jump import Jump
 from games.hotcold import Hot_cold
 from games.rainbow import Rainbow
+from games.hibernate import Hibernate
 
 class SimplePlushie:
     def __init__(self):
@@ -26,6 +27,9 @@ class SimplePlushie:
         self.buzzer = utilities.Buzzer()
         self.battery = i2c_bus.Battery()
         self.buzzer.stop()
+        
+        self.hidden_gem = None
+        self.rssi = None
          
         
 plush = SimplePlushie()
@@ -50,8 +54,11 @@ sally = Jump(plush)
 #asyncio.run(main(sally))
 
 sam = Rainbow(plush)
-asyncio.run(main(sam))
+#asyncio.run(main(sam))
 
 cath = Hot_cold(plush)
 #asyncio.run(main(cath))
+
+quinn = Hibernate(plush)
+asyncio.run(main(quinn))
 

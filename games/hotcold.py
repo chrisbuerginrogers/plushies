@@ -8,7 +8,6 @@ INTENSITY = 0.1
 class Hot_cold(Game):
     def __init__(self, main):
         super().__init__(main, 'Hot/Cold Game')
-        self.main = main
         
     def start(self):
         self.main.lights.all_off()

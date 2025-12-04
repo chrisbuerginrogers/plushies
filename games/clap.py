@@ -10,8 +10,7 @@ INTENSITY = 0.1
 
 class Clap(Game):
     def __init__(self, main):
-        super().__init__('Clap Game')
-        self.main = main
+        super().__init__(main, 'Clap Game')
         
     def start(self):
         self.led.all_off()
