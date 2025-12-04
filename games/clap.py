@@ -13,7 +13,7 @@ class Clap(Game):
         super().__init__(main, 'Clap Game')
         
     def start(self):
-        self.led.all_off()
+        self.main.lights.all_off()
         
     async def loop(self):
         if self.main.topic == '/notify':
@@ -22,12 +22,12 @@ class Clap(Game):
                 s = int(-11 * (strength+20)/50)   # assuming -60dB to -10dB is the best
                 strength = max(0, min(s, 11))
                 print('strength = ',strength)
-                self.led.all_off()
-                self.led.all_on(lights.RED, INTENSITY, 11-strength)
+                self.main.lights.all_off()
+                self.main.lights.all_on(RED, INTENSITY, 11-strength)
                 if strength > 6:
-                    self.buzzer.play(440)
+                    self.main.buzzer.play(440)
                     time.sleep(1)
-                    self.buzzer.stop()
+                    self.main.buzzer.stop()
                 self.main.topic = '/null'
             except Exception as e:
                 print(e)

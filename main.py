@@ -42,9 +42,10 @@ class Stuffie:
         self.button = utilities.Button()
         self.buzzer = utilities.Buzzer()
         self.buzzer.stop()
+        self.hibernate = utilities.Hibernate()
         
         self.game_names = [Notes(self), Shake(self), Hot_cold(self), Jump(self), Clap(self), Rainbow(self), Hibernate(self)]
-        self.response_times = [0.1, 0.1, 0.1, 0.1, 0.1, 0.1]
+        self.response_times = [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1]
 
     def now_callback(self, msg, mac, rssi):
         self.queue.append((mac, msg, rssi))
@@ -141,4 +142,4 @@ me = Stuffie()
         
 asyncio.run(me.main())
     
-    
+     

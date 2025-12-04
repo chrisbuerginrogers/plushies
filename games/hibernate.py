@@ -16,7 +16,7 @@ class Hibernate(Game):
             self.main.lights.all_off()
             time.sleep(0.5)
         if not self.main.button.pressed:
-            self.main.utilities.hibernate()
+            self.main.hibernate.hibernate()
             
     async def loop(self):
         pass

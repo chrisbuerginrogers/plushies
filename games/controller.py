@@ -31,7 +31,7 @@ class Controller:
         
     def connect(self):
         def my_callback(msg, mac, rssi):
-            if '/ping' in msg:
+            if not ('/ping' in msg):
                 print(mac, msg, rssi)
             #self.n.publish(msg, mac)
 
