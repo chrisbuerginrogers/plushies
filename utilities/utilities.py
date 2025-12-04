@@ -53,6 +53,7 @@ class Buzzer:
     def __init__(self):
         self.buzzer = PWM(Pin(BUZZER_PIN))
         self.freq = 0
+        self.buzzer.duty(0)
         
     def play(self, frequency):
         if frequency == self.freq: return

@@ -24,6 +24,7 @@ class SimplePlushie:
         self.accel = i2c_bus.LIS2DW12()
         self.button = utilities.Button()
         self.buzzer = utilities.Buzzer()
+        self.battery = i2c_bus.Battery()
         self.buzzer.stop()
          
         
@@ -40,17 +41,17 @@ async def main(code):
     code.close()
 
 fred = Notes(plush)
-asyncio.run(main(fred))
+#asyncio.run(main(fred))
 
 bill = Shake(plush)   
-asyncio.run(main(bill))
+#asyncio.run(main(bill))
 
 sally = Jump(plush)   
-asyncio.run(main(sally))
+#asyncio.run(main(sally))
 
 sam = Rainbow(plush)
 asyncio.run(main(sam))
 
 cath = Hot_cold(plush)
-asyncio.run(main(cath))
+#asyncio.run(main(cath))
 

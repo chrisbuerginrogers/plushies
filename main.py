@@ -36,6 +36,7 @@ class Stuffie:
         self.lights.all_off()
         
         self.accel = i2c_bus.LIS2DW12()
+        self.battery = i2c_bus.Battery()
         self.button = utilities.Button()
         self.buzzer = utilities.Buzzer()
         self.buzzer.stop()

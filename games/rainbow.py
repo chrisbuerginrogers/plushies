@@ -14,13 +14,19 @@ class Rainbow(Game):
         self.main = main
         
     def start(self):
-        pass
-        
-    async def loop(self):
+        self.bat = int(self.main.battery.read()/100*12)
+        self.bat = max(1, min(self.bat,12))
+        print('Battery: ',self.bat)
+        self.main.lights.all_on(GREEN, 0.1, self.bat)
+        time.sleep(2)
         for i in range(12):
             self.main.lights.on(i, COLORS[i%7], INTENSITY)
+            
+    async def loop(self):
+        pass
+
 
     def close(self):
         self.main.lights.all_off()
-        if not self.main.button.pressed:
-            self.main.utilities.hibernate()
+        #if not self.main.button.pressed:
+        #    self.main.utilities.hibernate()
