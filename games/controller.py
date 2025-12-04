@@ -112,13 +112,15 @@ class Button:
     def close(self):
         self.button.irq = None
 
-        
-controller = Controller()
-scroll_val = int(((controller.pot.read() + 1)/4095 * 5))*10 + 1
-controller.display.box_row(scroll_val)
-controller.connect()
 
-old_scroll_val = scroll_val
+controller = Controller()
+
+def scroll():
+    return scroll_val = int(((controller.pot.read() + 1)/4095 * 5))*10 + 1
+
+old_scroll_val = scroll
+controller.display.box_row(old_scroll_val)
+controller.connect()
 
 i = 0
 while True:
@@ -127,7 +129,7 @@ while True:
     #if i%10 == 1: controller.ping()
     controller.ping()
     
-    scroll_val = int(((controller.pot.read() + 1)/4095 * 5))*10 + 1
+    scroll_val = scroll()
     if scroll_val != old_scroll_val:
         controller.display.box_row(scroll_val)
         

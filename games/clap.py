@@ -34,8 +34,8 @@ class Clap(Game):
                 print(e)
 
     def close(self):
-        self.lights.all_off()
-        self.buzzer.stop()
+        self.main.lights.all_off()
+        self.main.buzzer.stop()
 
 
 

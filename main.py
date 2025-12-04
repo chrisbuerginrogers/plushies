@@ -15,6 +15,7 @@ from games.sound import Notes
 from games.shake import Shake
 from games.jump import Jump
 from games.hotcold import Hot_cold
+from games.clap import Clap
 from games.rainbow import Rainbow
 
 class Stuffie:
