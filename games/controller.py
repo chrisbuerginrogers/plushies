@@ -31,8 +31,9 @@ class Controller:
         
     def connect(self):
         def my_callback(msg, mac, rssi):
-            print(mac, msg, rssi)
-            self.n.publish(msg, mac)
+            if '/ping' in msg:
+                print(mac, msg, rssi)
+            #self.n.publish(msg, mac)
 
         self.n = now.Now(my_callback)
         self.n.connect(False)
@@ -117,7 +118,7 @@ class Button:
 controller = Controller()
 
 def scroll():
-    return 1+18*int(((controller.pot.read() + 1)/4095 * 5))
+    return 1+10*int(((controller.pot.read() + 1)/4095 * 6))
 
 old_scroll_val = scroll()
 controller.display.box_row(old_scroll_val)
@@ -131,9 +132,8 @@ while True:
     controller.ping()
     
     scroll_val = scroll()
+    controller.display.box_row(scroll_val)
     if scroll_val != old_scroll_val:
-        controller.display.box_row(scroll_val)
-        
         if controller.button_select.state == 1:
             controller.button_select.state = 0
             select = int(scroll_val/10)
@@ -145,7 +145,3 @@ while True:
         if controller.button_select.state == 1:
             controller.button_select.state = 0
             controller.notify()
-        
-        
-
-
