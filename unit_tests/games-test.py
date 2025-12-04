@@ -30,7 +30,6 @@ class SimplePlushie:
         
         self.hidden_gem = None
         self.rssi = None
-         
         
 plush = SimplePlushie()
 
