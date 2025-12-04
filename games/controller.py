@@ -18,6 +18,7 @@ class Controller:
         self.display.add_text('4: Jump')
         self.display.add_text('5: Clap')
         self.display.add_text('6: Rainbow')
+        self.display.add_text('7: Shutdown')
         
         self.display.last_row = None
         self.row = 1
@@ -116,9 +117,9 @@ class Button:
 controller = Controller()
 
 def scroll():
-    return scroll_val = int(((controller.pot.read() + 1)/4095 * 5))*10 + 1
+    return 1+18*int(((controller.pot.read() + 1)/4095 * 5))
 
-old_scroll_val = scroll
+old_scroll_val = scroll()
 controller.display.box_row(old_scroll_val)
 controller.connect()
 
@@ -146,4 +147,5 @@ while True:
             controller.notify()
         
         
+
 
