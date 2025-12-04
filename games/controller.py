@@ -56,9 +56,10 @@ class Controller:
     def choose(self, game):
         encoded_bytes = base64.b64encode(self.mac)
         encoded_string = encoded_bytes.decode('ascii')
+        time.sleep(0.5)
         mac = json.dumps({'topic':'/gem', 'value':encoded_string})
         self.n.publish(mac)
-        time.sleep(1)
+        time.sleep(0.5)
         setup = json.dumps({'topic':'/game', 'value':game})
         self.n.publish(setup)
 
@@ -78,13 +79,7 @@ class Display:
         self.display.text(text, 2, self.row, 1)  # 1 means white text
         self.row += ROW
         self.display.show()
-        
-    def arrow(self,row):
-        if self.last_row: self.display.fill_rect(100,self.last_row, 10, 10, 0)
-        self.display.fill_rect(100, row, 10,10, 1)
-        self.last_row = row
-        self.display.show()
-        
+
     def box_row(self, row):
         if self.last_row: self.display.rect(0,self.last_row,128,ROW-1,0)
         self.display.rect(0,row,128,ROW-1,1)
@@ -133,10 +128,10 @@ while True:
     
     scroll_val = scroll()
     controller.display.box_row(scroll_val)
+    select = int(scroll_val/10)
     if scroll_val != old_scroll_val:
         if controller.button_select.state == 1:
             controller.button_select.state = 0
-            select = int(scroll_val/10)
             print('select ', select)
             controller.choose(select)
             time.sleep(2)
@@ -144,4 +139,6 @@ while True:
     else:
         if controller.button_select.state == 1:
             controller.button_select.state = 0
-            controller.notify()
+            print('select again ', select)
+            controller.choose(select)
+
