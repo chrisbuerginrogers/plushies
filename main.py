@@ -47,31 +47,6 @@ class Stuffie:
         self.game_names = [Notes(self), Shake(self), Hot_cold(self), Jump(self), Clap(self), Rainbow(self), Hibernate(self)]
         self.response_times = [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1]
 
-    def now_callback(self, msg, mac, rssi):
-        self.queue.append((mac, msg, rssi))
-            
-    def parse_queue(self):
-        if not len(self.queue):
-            return False
-        try:
-            (mac, msg, rssi) = self.queue.pop()
-            payload = json.loads(msg)
-            topic = payload['topic']
-            value = payload['value']
-            print(topic)
-
-            if topic == '/ping':
-                self.rssi = rssi
-                return False
-            else:
-                print(mac, msg, rssi)
-                self.topic = topic
-                self.value = value
-                return True
-            
-        except Exception as e:
-            print(e)
-                
     def startup(self):
         print('Starting up')
         self.lights.on(0)
@@ -82,12 +57,13 @@ class Stuffie:
         print('my mac address is ',[hex(b) for b in self.mac])
         self.lights.on(2)
         
-    def start_game(self, number):
+    async def start_game(self, number):
         if number < 0 or number >= len(self.game_names):
             print('illegal game number')
             return
         if self.game == number:
-            print(f'already running {number}')
+            print(f'notify {number}')
+            self.topic = '/notify'
             return
         print('starting game ', number)
         self.lights.on(3)
@@ -107,9 +83,33 @@ class Stuffie:
         if self.espnow: self.espnow.close()
         self.lights.all_off()
         self.buzzer.stop()
-        
-    async def dosomething(self, topic, value, game):
-        print('running queue')
+
+    def now_callback(self, msg, mac, rssi):
+        self.queue.append((mac, msg, rssi))
+            
+    def pop_queue(self):
+        if not len(self.queue):
+            return
+        try:
+            (mac, msg, rssi) = self.queue.pop()
+            payload = json.loads(msg)
+            topic = payload['topic']
+            value = payload['value']
+            print(topic)
+
+            if topic == '/ping':
+                self.rssi = rssi
+                return
+            else:
+                print(mac, msg, rssi)
+                self.execute_queue(topic, value, self.game)
+            
+        except Exception as e:
+            print(e)
+                
+
+    async def execute_queue(self, topic, value, game):
+        print('running queue', topic, value, game)
         try:
             if topic == "/gem":  #do this here because you do not want to miss it
                 bytes_from_string = value.encode('ascii')
@@ -117,7 +117,7 @@ class Stuffie:
                 print('hidden gem = ',gem_mac)
                 self.hidden_gem = gem_mac
             
-            if self.topic == '/game':
+            if topic == '/game':
                 print('who knows ',value,game)
                 if value != game:
                     print('Game ',value)
@@ -127,6 +127,8 @@ class Stuffie:
                     if value >= 0:
                         print('starting game ',value)
                         self.start_game(value)
+            self.topic =  topic
+            self.value = value
         except Exception as e:
             print(e)
                     
@@ -137,12 +139,7 @@ class Stuffie:
             while self.game >= 0:
                 print(len(self.queue),' ',end='')
                 while len(self.queue):
-                    good = self.parse_queue()
-                    print(good)
-                    if good:
-                        print('here ',self.topic, self.value, self.game)
-                        await self.dosomething(self.topic, self.value, self.game)
-                        print('fred ',self.topic, self.value, self.game)
+                    await self.pop_queue()
                 await asyncio.sleep(0.5)
         except Exception as e:
             print('main error: ',e)
