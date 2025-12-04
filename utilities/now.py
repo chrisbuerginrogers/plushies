@@ -31,9 +31,9 @@ class Now():
         try:
             mac, msg = remote_network.irecv()
             rssi = remote_network.peers_table
-            if mac != None and mac not in self.peers: #check if the peer has already been added
-                self.peers.append(mac)
-                self.now_network.add_peer(mac)
+            #if mac != None and mac not in self.peers: #check if the peer has already been added
+            #    self.peers.append(mac)
+            #    self.now_network.add_peer(mac)
             self.callback(msg, mac, rssi)
         except Exception as e:
             print(f"Receive Error: {e}")

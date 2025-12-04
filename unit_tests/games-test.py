@@ -28,6 +28,8 @@ class SimplePlushie:
         self.battery = i2c_bus.Battery()
         self.buzzer.stop()
         
+        self.hibernate = utilities.Hibernate()
+        
         self.hidden_gem = None
         self.rssi = None
         

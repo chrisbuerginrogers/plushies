@@ -57,7 +57,7 @@ class Stuffie:
         print('my mac address is ',[hex(b) for b in self.mac])
         self.lights.on(2)
         
-    async def start_game(self, number):
+    def start_game(self, number):
         if number < 0 or number >= len(self.game_names):
             print('illegal game number')
             return
@@ -66,7 +66,6 @@ class Stuffie:
             self.topic = '/notify'
             return
         print('starting game ', number)
-        self.lights.on(3)
         self.running = True
         self.game = number
         self.task = asyncio.create_task(self.game_names[number].run(self.response_times[number]))
@@ -87,7 +86,7 @@ class Stuffie:
     def now_callback(self, msg, mac, rssi):
         self.queue.append((mac, msg, rssi))
             
-    def pop_queue(self):
+    async def pop_queue(self):
         if not len(self.queue):
             return
         try:
@@ -95,38 +94,43 @@ class Stuffie:
             payload = json.loads(msg)
             topic = payload['topic']
             value = payload['value']
-            print(topic)
 
             if topic == '/ping':
                 self.rssi = rssi
                 return
             else:
-                print(mac, msg, rssi)
-                self.execute_queue(topic, value, self.game)
+                #print(mac, msg, rssi)
+                self.lights.all_on(GREEN)
+                print(topic)
+                await self.execute_queue(topic, value, self.game)
+                self.lights.all_off()
             
         except Exception as e:
-            print(e)
+            print('pop error ',e)
                 
-
     async def execute_queue(self, topic, value, game):
         print('running queue', topic, value, game)
         try:
-            if topic == "/gem":  #do this here because you do not want to miss it
+            if topic == "/gem": 
                 bytes_from_string = value.encode('ascii')
                 gem_mac = base64.b64decode(bytes_from_string)
                 print('hidden gem = ',gem_mac)
                 self.hidden_gem = gem_mac
             
             if topic == '/game':
-                print('who knows ',value,game)
                 if value != game:
                     print('Game ',value)
                     if game >= 0:
                         await self.stop_game(game)
+                        await self.lights.animate(RED,timeout = 0)
                     #self.game = self.value
                     if value >= 0:
                         print('starting game ',value)
+                        await self.lights.animate(COLORS[value],timeout = 0)
                         self.start_game(value)
+                else:
+                    print('notifying')
+                    topic = '/notify'
             self.topic =  topic
             self.value = value
         except Exception as e:
@@ -140,7 +144,7 @@ class Stuffie:
                 print(len(self.queue),' ',end='')
                 while len(self.queue):
                     await self.pop_queue()
-                await asyncio.sleep(0.5)
+                await asyncio.sleep(0.1)
         except Exception as e:
             print('main error: ',e)
         finally:

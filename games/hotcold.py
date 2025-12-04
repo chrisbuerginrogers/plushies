@@ -16,10 +16,9 @@ class Hot_cold(Game):
         """
         Async task to read the ping strength of hidden_gem.
         """
-        #if self.main.topic == '/ping':
         try:
-            print(self.main.hidden_gem)
-            print(self.main.rssi)
+            if not self.main.rssi:
+                return
             strength = self.main.rssi[self.main.hidden_gem][0]
             s = int(-11 * (strength+20)/50)   # assuming -60dB to -10dB is the best
             strength = max(0, min(s, 11))
