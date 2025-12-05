@@ -1,6 +1,8 @@
 ## Jenn's app
 You can use a controller or control it from a webpage on your PC (as long as you have an ESP connected over serial to the PC - it needs to talk ESPNow).  You can go to her page [here](https://jenncross.pyscriptapps.com/playground-app-front-end/latest/)
 
+## Rebecca's directions
+Everything you ever wanted to know about the plushies is [here](https://docs.google.com/document/d/1ZWiAuw0-c6vUcJj_BtOd9nNZ2lEap2TVb2oTfOTQjmg/edit?pli=1&tab=t.0#heading=h.ie2lmmjf5nys)
 ## Playground code
 
 Things seem to work.  Move the folder structure down on to a plushie - then replace main.py with the one in games - and then run this code on a different ESP to change the game.
