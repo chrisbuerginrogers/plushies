@@ -1,3 +1,6 @@
+## Jenn's app
+You can use a controller or control it from a webpage on your PC (as long as you have an ESP connected over serial to the PC - it needs to talk ESPNow).  You can go to her page [here](https://jenncross.pyscriptapps.com/playground-app-front-end/latest/)
+
 ## Playground code
 
 Things seem to work.  Move the folder structure down on to a plushie - then replace main.py with the one in games - and then run this code on a different ESP to change the game.
