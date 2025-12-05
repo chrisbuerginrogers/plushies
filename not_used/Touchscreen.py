@@ -1,4 +1,5 @@
 # https://github.com/dobodu/Lilygo_Waveshare_Amoled_Micropython/tree/main
+# https://www.waveshare.com/product/arduino/displays/amoled/esp32-s3-touch-amoled-1.8.htm
 
 from machine import SoftI2C, Pin
 import config.WS_180_AMOLED as disp
