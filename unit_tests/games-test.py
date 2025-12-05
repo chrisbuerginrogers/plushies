@@ -48,13 +48,13 @@ fred = Notes(plush)
 #asyncio.run(main(fred))
 
 bill = Shake(plush)   
-asyncio.run(main(bill))
+#asyncio.run(main(bill))
 
 sally = Jump(plush)   
 #asyncio.run(main(sally))
 
 sam = Rainbow(plush)
-#asyncio.run(main(sam))
+asyncio.run(main(sam))
 
 cath = Hot_cold(plush)
 #asyncio.run(main(cath))

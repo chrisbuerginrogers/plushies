@@ -22,8 +22,9 @@ class Rainbow(Game):
             self.main.lights.on(i, COLORS[i%7], INTENSITY)
             
     async def loop(self):
-        pass
-
+        if self.main.topic == '/notify':
+            self.start()
+            self.main.topic = ''
 
     def close(self):
         self.main.lights.all_off()
