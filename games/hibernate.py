@@ -19,7 +19,9 @@ class Hibernate(Game):
             self.main.hibernate.hibernate()
             
     async def loop(self):
-        pass
+        if self.main.topic == '/notify':
+            self.start()
+            self.main.topic = ''
 
     def close(self):
         self.main.lights.all_off()
