@@ -16,9 +16,9 @@ class Shake(Game):
         print(f'your color is {self.color}')
         self.level = 0
         
-    def abs_accel(self):
+    def accel_mag(self):
         x,y,z = self.main.accel.read_accel()
-        return abs(math.sqrt(x**2+y**2+z**2) - 1)
+        return math.sqrt(x**2+y**2+z**2) - 1
         
 
     async def loop(self):
@@ -30,7 +30,7 @@ class Shake(Game):
             self.level = 0
             self.main.lights.all_off()
         else:  # Button released
-            acc = min(11, int(self.abs_accel()) * 5)
+            acc = min(12, int(self.accel_mag()**3*1.5))
             if self.level < acc: self.level = acc
             self.main.lights.all_on(self.color, 0.1, self.level)
 

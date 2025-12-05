@@ -21,11 +21,6 @@ class Jump(Game):
         print("jumping")
         self.in_jump = False
         self.last_jump_time = 0
-        
-    def abs_accel(self):
-        x,y,z = self.main.accel.read_accel()
-        return math.sqrt(x**2+y**2+z**2) - 1
-        
 
     async def loop(self):
         """

@@ -1,10 +1,9 @@
 from machine import SoftI2C, Pin, ADC
 import ssd1306
 import time, json
+import ubinascii
 
 import  utilities.now as now
-import  utilities.base64 as base64
-
 
 ROW = 10
 
@@ -54,7 +53,7 @@ class Controller:
         print('notified')
         
     def choose(self, game):
-        encoded_bytes = base64.b64encode(self.mac)
+        encoded_bytes = ubinascii.b2a_base64(self.mac)
         encoded_string = encoded_bytes.decode('ascii')
         time.sleep(0.5)
         mac = json.dumps({'topic':'/gem', 'value':encoded_string})

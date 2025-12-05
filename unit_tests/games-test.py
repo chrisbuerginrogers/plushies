@@ -4,7 +4,6 @@ import utilities.utilities as utilities
 import utilities.lights as lights
 import utilities.now as now
 import utilities.i2c_bus as i2c_bus
-import utilities.base64 as base64
 from utilities.colors import *
 
 from games.sound import Notes
@@ -38,9 +37,9 @@ plush = SimplePlushie()
 async def main(code):
     plush.running = True
     task = asyncio.create_task(code.run())
-    for i in range(10):
+    for i in range(100):
         print('@',end='')
-        await asyncio.sleep(1)
+        await asyncio.sleep(0.1)
     plush.running = False
     await task
     code.close()
@@ -49,7 +48,7 @@ fred = Notes(plush)
 #asyncio.run(main(fred))
 
 bill = Shake(plush)   
-#asyncio.run(main(bill))
+asyncio.run(main(bill))
 
 sally = Jump(plush)   
 #asyncio.run(main(sally))
@@ -61,5 +60,5 @@ cath = Hot_cold(plush)
 #asyncio.run(main(cath))
 
 quinn = Hibernate(plush)
-asyncio.run(main(quinn))
+#asyncio.run(main(quinn))
 

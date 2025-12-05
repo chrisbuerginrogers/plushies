@@ -1,6 +1,7 @@
 import time
 import asyncio
 import json
+import ubinascii
 
 from collections import deque
 
@@ -8,7 +9,6 @@ import utilities.utilities as utilities
 import utilities.lights as lights
 import utilities.now as now
 import utilities.i2c_bus as i2c_bus
-import utilities.base64 as base64
 from utilities.colors import *
 
 from games.sound import Notes
@@ -113,7 +113,7 @@ class Stuffie:
         try:
             if topic == "/gem": 
                 bytes_from_string = value.encode('ascii')
-                gem_mac = base64.b64decode(bytes_from_string)
+                gem_mac = ubinascii.a2b_base64(bytes_from_string)
                 print('hidden gem = ',gem_mac)
                 self.hidden_gem = gem_mac
             
