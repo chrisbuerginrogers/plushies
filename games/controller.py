@@ -1,13 +1,10 @@
 from machine import SoftI2C, Pin, ADC
-import ssd1306
 import time, json
 import ubinascii
 
 import  utilities.now as now
 
 ROW = 10
-
-import ledmatrix
 
 class Control:
     def connect(self):
@@ -47,6 +44,9 @@ class Control:
 
 class Display:
     def __init__(self):
+        import ssd1306
+        import ledmatrix
+        
         i2c = SoftI2C(scl = Pin(7), sda = Pin(6))
         self.display = ssd1306.SSD1306_I2C(128, 64,i2c)
         self.leds = ledmatrix.LEDMATRIX(i2c)
