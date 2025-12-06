@@ -35,6 +35,7 @@ class Controller(Control):
         if not len(self.queue):
             return
         try:
+            await asyncio.sleep(0)
             (msg, mac, rssi) = self.queue.popleft()
             if not ('/ping' in msg): print(mac, msg, rssi)
             payload = json.loads(msg)
@@ -57,20 +58,23 @@ class Sniffer:
     async def main(self):
         try:
             self.controller.connect()
-
+            last_display_update = 0
+            display_interval = 1.0
+            
             while self.controller.display.button.value() != 0:
-                if not len(self.controller.queue): continue
-                print(len(self.controller.queue),' ',end='')
-
+                # Process queue ONLY - no display updates here
                 while len(self.controller.queue):
                     await self.controller.pop_queue()
-
-                self.controller.display.clear_screen()
-                self.controller.display.add_text("      Now Sniffer")
-                for s in self.controller.topics.items():
-                    self.controller.display.add_text(f'{s[0]}: {s[1][0]}  {s[1][1]}')
-
-                await asyncio.sleep(1)
+                    await asyncio.sleep(0)  # Yield after each item
+                
+                # Display update on separate timer
+                current_time = time.time()
+                if current_time - last_display_update >= display_interval:
+                    self.controller.display.clear_screen()
+                    self.controller.display.add_text("      Now Sniffer")
+                    for s in self.controller.topics.items():
+                        self.controller.display.add_text(f'{s[0]}: {s[1][0]}  {s[1][1]}')
+                    last_display_update = current_time
 
         except Exception as e:
             print('main error: ',e)
