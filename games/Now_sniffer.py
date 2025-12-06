@@ -57,8 +57,8 @@ class Sniffer:
     async def main(self):
         try:
             self.controller.connect()
-            last_display_update = 0
-            display_interval = 1.0  # Update display every 1 sec
+            last_update = 0
+            update = 1.0  # Update display every 1 sec
 
             while self.controller.display.button.value() != 0:
                 if not len(self.controller.queue): continue
@@ -67,16 +67,15 @@ class Sniffer:
                 j=0
                 while len(self.controller.queue):
                     await self.controller.pop_queue()
-                    await asyncio.sleep(0)  # Yield after each item
- 
+
                 # Update display only every ~1 second
-                current_time = time.time()
-                if current_time - last_display_update >= display_interval:
+                current = time.time()
+                if current - last_update >= update:
                     self.controller.display.clear_screen()
                     self.controller.display.add_text("      Now Sniffer")
                     for s in self.controller.topics.items():
                         self.controller.display.add_text(f'{s[0]}: {s[1][0]}  {s[1][1]}')
-                    last_display_update = current_time
+                    last_update = current
             else:
                 await asyncio.sleep(0)  # Yield to event loop when nothing to do
 
