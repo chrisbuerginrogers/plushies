@@ -3,9 +3,7 @@ import time, json
 import ubinascii
 
 import  utilities.now as now
-
-ROW = 40
-LEFT = 20
+from games.controller import Control
 
 # ===== I2C Device Addresses =====
 TOUCH_WIDTH = 368
@@ -14,45 +12,13 @@ FT3168_ADDR = 0x38      # Touch controller
 TCA9554_ADDR = 0x20     # GPIO expander (or 0x34)
 PWR_BUTTON_PIN = 4      # EXIO4 on the expander
 
-class Control:
-    def connect(self):
-        def my_callback(msg, mac, rssi):
-            if not ('/ping' in msg):
-                print(mac, msg, rssi)
-
-        self.n = now.Now(my_callback)
-        self.n.connect(False)
-        self.mac = self.n.wifi.config('mac')
-        print(self.mac)
-        
-    def shutdown(self):
-        stop = json.dumps({'topic':'/game', 'value':-1})
-        self.n.publish(stop)
-        
-    def ping(self):
-        ping = json.dumps({'topic':'/ping', 'value':1})
-        self.n.publish(ping)
-        
-    def notify(self):
-        note = json.dumps({'topic':'/notify', 'value':1})
-        self.n.publish(note)
-        print('notified')
-        
-    def choose(self, game):
-        encoded_bytes = ubinascii.b2a_base64(self.mac)
-        encoded_string = encoded_bytes.decode('ascii')
-        time.sleep(0.5)
-        mac = json.dumps({'topic':'/gem', 'value':encoded_string})
-        self.n.publish(mac)
-        time.sleep(0.5)
-        setup = json.dumps({'topic':'/game', 'value':game})
-        self.n.publish(setup)
-
-
 class Display:
     def __init__(self):
         import config.WS_180_AMOLED as disp
         import fonts.large as font
+        
+        self.ROW = 40
+        self.LEFT = 20
 
         self.display = disp.display
         self.row = 1
@@ -78,14 +44,14 @@ class Display:
         self.row = 1
         
     def add_text(self, text):
-        self.display.write(self.font, text, LEFT, self.row, self.foreground, self.background) 
-        self.row += ROW
+        self.display.write(self.font, text, self.LEFT, self.row, self.foreground, self.background) 
+        self.row += self.ROW
 
     def box_row(self, row):
         if row < 1 or row > 7:
             return
-        if self.last_row: self.display.rect(2,self.last_row*ROW,250,ROW-3,0)
-        self.display.rect(2,row*ROW,250,ROW-3,255)
+        if self.last_row: self.display.rect(2,self.last_row*self.ROW,250,self.ROW-3,0)
+        self.display.rect(2,row*self.ROW,250,self.ROW-3,255)
         self.last_row = row
         
     def read_i2c_quick(self,address, register, num_bytes):
@@ -120,26 +86,6 @@ class Display:
         
     def close(self):
         self.clear_screen()
-
-class Button:
-    def __init__(self, pin):
-        self.button = Pin(pin, Pin.IN, Pin.PULL_UP)
-        self.button.irq(handler=self.update, trigger=Pin.IRQ_FALLING)
-        self.state = 0
-        
-    def update(self, p):
-        accept = False
-        start = time.ticks_ms()
-        #self.state = 0
-        while self.button.value() == 0:
-            if time.ticks_ms()-start > 50:
-                accept = True
-                print("button pressed")
-                time.sleep(0.2)
-                self.state = 1
-               
-    def close(self):
-        self.button.irq = None
 
 class Controller(Control):
     def __init__(self):
@@ -180,8 +126,8 @@ if __name__ == '__main__':
             success, x, y = controller.display.read_touch_coords()
             if success:
                 #print(f"Touch {touch_count}: ({x}, {y})")
-                controller.display.box_row(int(y/ROW))
-                select = int(y/ROW)-1
+                controller.display.box_row(int(y/controller.display.ROW))
+                select = int(y/controller.display.ROW)-1
                 print('boxed ',select)
         last_touch_state = touch_state
         
