@@ -7,7 +7,6 @@ import time
 
 # ===== Display Setup =====
 display = disp.display
-display.brightness(0)
 display.reset()
 display.init()
 display.rotation(3)
