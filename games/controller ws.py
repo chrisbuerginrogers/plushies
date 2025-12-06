@@ -7,6 +7,13 @@ import  utilities.now as now
 ROW = 40
 LEFT = 20
 
+# ===== I2C Device Addresses =====
+TOUCH_WIDTH = 368
+TOUCH_HEIGHT = 448
+FT3168_ADDR = 0x38      # Touch controller
+TCA9554_ADDR = 0x20     # GPIO expander (or 0x34)
+PWR_BUTTON_PIN = 4      # EXIO4 on the expander
+
 class Control:
     def connect(self):
         def my_callback(msg, mac, rssi):
@@ -75,9 +82,41 @@ class Display:
         self.row += ROW
 
     def box_row(self, row):
-        #if self.last_row: self.display.rect(0,self.last_row,250,ROW-3,255)
+        if row < 1 or row > 7:
+            return
+        if self.last_row: self.display.rect(2,self.last_row*ROW,250,ROW-3,0)
         self.display.rect(2,row*ROW,250,ROW-3,255)
         self.last_row = row
+        
+    def read_i2c_quick(self,address, register, num_bytes):
+        """Quick I2C read - may fail due to GPIO 14 conflict"""
+        try:
+            i2c = SoftI2C(scl=Pin(14), sda=Pin(15), freq=400000, timeout=10000)
+            return i2c.readfrom_mem(address, register, num_bytes)
+        except:
+            return None
+
+    def read_touch_coords(self):
+        """Read touch coordinates from FT3168"""
+        data = self.read_i2c_quick(FT3168_ADDR, 0x02, 1)
+        if data and data[0] > 0:
+            touch_data = self.read_i2c_quick(FT3168_ADDR, 0x03, 4)
+            if touch_data:
+                x_raw = ((touch_data[0] & 0x0F) << 8) | touch_data[1]
+                y_raw = ((touch_data[2] & 0x0F) << 8) | touch_data[3]
+                x = TOUCH_WIDTH - x_raw
+                y = TOUCH_HEIGHT - y_raw
+                return (True, x, y)
+        return (False, 0, 0)
+
+    def read_pwr_button(self):
+        """Read PWR button state from GPIO expander (active HIGH)"""
+        # TCA9554 input register is 0x00
+        data = self.read_i2c_quick(TCA9554_ADDR, 0x00, 1)
+        if data:
+            # Check bit 4 (EXIO4)
+            return (data[0] >> PWR_BUTTON_PIN) & 0x01
+        return 0
         
     def close(self):
         self.clear_screen()
@@ -121,24 +160,42 @@ class Controller(Control):
 
 if __name__ == '__main__':
     controller = Controller()
-
-    def scroll():
-        return 3
-
-    old_scroll_val = 3
-    controller.display.box_row(old_scroll_val)
     controller.connect()
-
+    
+    last_touch_state = 1
+    last_pwr_state = 0
+    touch_count = 0
     i = 0
+    select = 0
+    
     while True:
         i += 1
         time.sleep(0.1)
         #if i%10 == 1: controller.ping()
         controller.ping()
         
-        scroll_val = scroll()
-        controller.display.box_row(scroll_val)
-        select = int(scroll_val/10)
+        touch_state = controller.display.touch.value()
+        if touch_state == 0 and last_touch_state == 1:
+            touch_count += 1
+            success, x, y = controller.display.read_touch_coords()
+            if success:
+                #print(f"Touch {touch_count}: ({x}, {y})")
+                controller.display.box_row(int(y/ROW))
+                select = int(y/ROW)-1
+                print('boxed ',select)
+        last_touch_state = touch_state
+        
+        # Check PWR button (upper button - active HIGH)
+        pwr_state = controller.display.read_pwr_button()
+        if pwr_state == 1 and last_pwr_state == 0:
+            print("PWR button pressed!")
+        last_pwr_state = pwr_state
+        
+        # Check BOOT button (lower button - active LOW)
+        if controller.display.button.value() == 0:
+            print('select ', select)
+            controller.choose(select)
+            time.sleep(0.3)
         
         '''
         if scroll_val != old_scroll_val:

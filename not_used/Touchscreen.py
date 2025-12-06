@@ -7,12 +7,13 @@ import time
 
 # ===== Display Setup =====
 display = disp.display
+display.brightness(0)
 display.reset()
 display.init()
 display.rotation(3)
 display.brightness(255)
 display.fill(0)
-display.jpg("/bmp/smiley_small.jpg", 10, 50)
+#display.jpg("/bmp/smiley_small.jpg", 10, 50)
 
 # ===== Pin Setup =====
 touch_int = Pin(19, Pin.IN, Pin.PULL_UP)  # Touch interrupt
