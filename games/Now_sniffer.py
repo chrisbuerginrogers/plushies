@@ -16,13 +16,16 @@ class Controller(Control):
         
         self.button = Pin(0, Pin.IN, Pin.PULL_UP)
         
-        self.queue = deque([], 20)
+        self.queue = deque([],1000)
         self.topics = {}
         
     def connect(self):
         def my_callback(msg, mac, rssi):
-            self.queue.append((msg, mac, rssi))
-
+            try:
+                self.queue.append((msg, mac, rssi))
+            except Exception as e:
+                print(f"Callback error: {e}")
+        
         self.n = now.Now(my_callback)
         self.n.connect(False)
         self.mac = self.n.wifi.config('mac')
@@ -54,21 +57,29 @@ class Sniffer:
     async def main(self):
         try:
             self.controller.connect()
+            last_display_update = 0
+            display_interval = 1.0  # Update display every 1 sec
+
             while self.controller.display.button.value() != 0:
-                
-                await asyncio.sleep(0.1)
                 if not len(self.controller.queue): continue
                 
                 print(len(self.controller.queue),' ',end='')
                 j=0
                 while len(self.controller.queue):
                     await self.controller.pop_queue()
-                    #print(len(self.controller.queue))
-                self.controller.display.clear_screen()
-                self.controller.display.add_text("      Now Sniffer")
-                for s in self.controller.topics.items():
-                    self.controller.display.add_text(f'{s[0]}: {s[1][0]}  {s[1][1]}')
-                    #print(f'{s[0]}: {s[1][0]}  {s[1][1]}')
+                    await asyncio.sleep(0)  # Yield after each item
+ 
+                # Update display only every ~1 second
+                current_time = time.time()
+                if current_time - last_display_update >= display_interval:
+                    self.controller.display.clear_screen()
+                    self.controller.display.add_text("      Now Sniffer")
+                    for s in self.controller.topics.items():
+                        self.controller.display.add_text(f'{s[0]}: {s[1][0]}  {s[1][1]}')
+                    last_display_update = current_time
+            else:
+                await asyncio.sleep(0)  # Yield to event loop when nothing to do
+
 
         except Exception as e:
             print('main error: ',e)

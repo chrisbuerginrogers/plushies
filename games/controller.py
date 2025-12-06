@@ -11,7 +11,6 @@ class Control:
         def my_callback(msg, mac, rssi):
             if not ('/ping' in msg):
                 print(mac, msg, rssi)
-            #self.n.publish(msg, mac)
 
         self.n = now.Now(my_callback)
         self.n.connect(False)

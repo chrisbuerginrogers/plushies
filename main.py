@@ -144,6 +144,7 @@ class Stuffie:
                 print(len(self.queue),' ',end='')
                 while len(self.queue):
                     await self.pop_queue()
+                    await asyncio.sleep(0)
                 await asyncio.sleep(0.1)
         except Exception as e:
             print('main error: ',e)
