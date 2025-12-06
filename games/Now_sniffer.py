@@ -14,14 +14,14 @@ class Controller(Control):
         self.display.clear_screen()
         self.display.add_text("      Now Sniffer")
         
+        self.button = Pin(0, Pin.IN, Pin.PULL_UP)
+        
         self.queue = deque([], 20)
         self.topics = {}
         
     def connect(self):
         def my_callback(msg, mac, rssi):
-            self.queue.append((mac, msg, rssi))
-            if not ('/ping' in msg):
-                print(mac, msg, rssi)
+            self.queue.append((msg, mac, rssi))
 
         self.n = now.Now(my_callback)
         self.n.connect(False)
@@ -32,7 +32,8 @@ class Controller(Control):
         if not len(self.queue):
             return
         try:
-            (mac, msg, rssi) = self.queue.pop()
+            (msg, mac, rssi) = self.queue.popleft()
+            if not ('/ping' in msg): print(mac, msg, rssi)
             payload = json.loads(msg)
             topic = payload['topic']
             value = payload['value']
@@ -41,6 +42,7 @@ class Controller(Control):
                 num = 1 + self.topics[topic][1]
             
             self.topics[topic] = (value,num)
+            #print(self.topics[topic])
         except Exception as e:
             print('pop error ',e)
 
@@ -52,18 +54,22 @@ class Sniffer:
     async def main(self):
         try:
             self.controller.connect()
-            while True:
+            while self.controller.display.button.value() != 0:
+                
                 await asyncio.sleep(0.1)
                 if not len(self.controller.queue): continue
                 
                 print(len(self.controller.queue),' ',end='')
+                j=0
                 while len(self.controller.queue):
                     await self.controller.pop_queue()
-                self.controller.display.row = 1
+                    #print(len(self.controller.queue))
+                self.controller.display.clear_screen()
                 self.controller.display.add_text("      Now Sniffer")
                 for s in self.controller.topics.items():
                     self.controller.display.add_text(f'{s[0]}: {s[1][0]}  {s[1][1]}')
-                
+                    #print(f'{s[0]}: {s[1][0]}  {s[1][1]}')
+
         except Exception as e:
             print('main error: ',e)
         finally:
