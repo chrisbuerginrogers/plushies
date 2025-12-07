@@ -33,10 +33,10 @@ class Control:
     def choose(self, game):
         encoded_bytes = ubinascii.b2a_base64(self.mac)
         encoded_string = encoded_bytes.decode('ascii')
-        time.sleep(0.5)
+        #time.sleep(0.5)
         mac = json.dumps({'topic':'/gem', 'value':encoded_string})
         self.n.publish(mac)
-        time.sleep(0.5)
+        #time.sleep(0.5)
         setup = json.dumps({'topic':'/game', 'value':game})
         self.n.publish(setup)
 

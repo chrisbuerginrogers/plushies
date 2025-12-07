@@ -112,7 +112,7 @@ if __name__ == '__main__':
     last_pwr_state = 0
     touch_count = 0
     i = 0
-    select = 0
+    selected = 0
     
     while True:
         i += 1
@@ -126,9 +126,10 @@ if __name__ == '__main__':
             success, x, y = controller.display.read_touch_coords()
             if success:
                 #print(f"Touch {touch_count}: ({x}, {y})")
-                controller.display.box_row(int(y/controller.display.ROW))
-                select = int(y/controller.display.ROW)-1
-                print('boxed ',select)
+                selected = int(y/controller.display.ROW)
+                selected = max(0, min(7, selected))
+                controller.display.box_row(selected)
+                print('boxed ',selected)
         last_touch_state = touch_state
         
         # Check PWR button (upper button - active HIGH)
@@ -139,25 +140,7 @@ if __name__ == '__main__':
         
         # Check BOOT button (lower button - active LOW)
         if controller.display.button.value() == 0:
-            print('select ', select)
-            controller.choose(select)
+            print('select ', selected - 1)
+            controller.choose(selected - 1)
             time.sleep(0.3)
         
-        '''
-        if scroll_val != old_scroll_val:
-            if controller.button_select.state == 1:
-                controller.button_select.state = 0
-                
-                print('select ', select)
-                controller.choose(select)
-
-                time.sleep(1)
-                old_scroll_val = scroll_val
-                
-        else:
-            if controller.button_select.state == 1:
-                controller.button_select.state = 0
-
-                print('select again ', select)
-                controller.choose(select)
-'''
